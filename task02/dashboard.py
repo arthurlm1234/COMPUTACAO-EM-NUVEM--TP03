@@ -3,8 +3,6 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 import numpy as np
 
-
-# Inicializar a aplicação Dash
 app = dash.Dash(__name__)
 
 def dados_redis():
@@ -12,7 +10,6 @@ def dados_redis():
     data = redis_client.get("2021031599-proj3-output").decode('utf-8')
     return json.loads(data)
 
-# Layout da aplicação
 app.layout = html.Div([
     html.H1("Dashboard de Recursos do Sistema"),
     
@@ -24,20 +21,17 @@ app.layout = html.Div([
     ]
 ])
 
-# Atualiza os gráficos com os dados da função handler
 @app.callback(
     Output('graph-rede-egresso', 'figure'),
     Output('graph-cache-memoria', 'figure'),
     *[
         Output(f'graph-cpu-{i}', 'figure') for i in range(16)
     ],
-    Input('interval-component', 'n_intervals')  # Adicione um componente de intervalo para atualizações periódicas
+    Input('interval-component', 'n_intervals')
 )
 def update_graphs(n_intervals):
-    # Call your data retrieval function
     dados = dados_redis()
 
-    # Logic to create figures based on data
     figure_rede_egresso = {
         'data': [
             {'x': ['Percent Egress'], 'y': [dados.get('porcentagem-rede-egresso', 0)], 'type': 'bar', 'name': 'Percent Egress'},
@@ -70,9 +64,7 @@ def update_graphs(n_intervals):
     return figure_rede_egresso, figure_cache_memoria, *figures_cpu
 
 
-# Adicione um componente de intervalo para atualizações periódicas
 app.layout.children.append(dcc.Interval(id='interval-component', interval=10*1000, n_intervals=0))
 
-# Executa a aplicação
 if __name__ == '__main__':
     app.run_server(debug=True)
