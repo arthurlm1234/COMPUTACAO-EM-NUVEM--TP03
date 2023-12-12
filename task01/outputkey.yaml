@@ -1,0 +1,11 @@
+REDIS_OUTPUT_KEY=2021031599-proj3-output     --output yaml
+apiVersion: v1
+data:
+  REDIS_OUTPUT_KEY: 2021031599-proj3-output
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2023-12-12T12:54:35Z"
+  name: outputkey
+  namespace: arthurmadureira
+  resourceVersion: "4332317"
+  uid: 04b5aa25-129f-426d-a5c5-70113d5e6f34

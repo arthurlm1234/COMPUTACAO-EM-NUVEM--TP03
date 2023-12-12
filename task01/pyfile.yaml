@@ -1,0 +1,28 @@
+apiVersion: v1
+data:
+  pyfile: "import numpy as np\n\ndef handler(entrada: dict, contexto: object) -> dict:\n\n
+    \   nb_cpus = 16\n    porcentagens_cpu = [entrada.get(f'cpu_percent-{i}', 0) for
+    i in range(nb_cpus)]\n\n    memoria_virtual_total = entrada.get('virtual_memory-total',
+    0)\n    memoria_virtual_buffers = entrada.get('virtual_memory-buffers', 0)\n    memoria_virtual_cached
+    = entrada.get('virtual_memory-cached', 0)\n\n    bytes_enviados = entrada.get('net_io_counters_eth0-packets_sent',
+    0)\n    bytes_recebidos = entrada.get('net_io_counters_eth0-packets_recv', 0)\n\n
+    \   total_bytes = bytes_enviados + bytes_recebidos\n    porcentagem_egresso_rede
+    = (bytes_enviados / total_bytes) * 100 if total_bytes > 0 else 0\n\n    porcentagem_cache_memoria
+    = ((memoria_virtual_buffers + memoria_virtual_cached) / memoria_virtual_total)
+    * 100 if memoria_virtual_total > 0 else 0\n\n    medias_moveis_simples = []\n
+    \   for i, porcentagem_cpu_X in enumerate(porcentagens_cpu):\n        utilizacoes_X
+    = contexto.env.get(f'cpu{i}_utilizations', [])\n        utilizacoes_X.append(porcentagem_cpu_X)\n
+    \       \n        if len(utilizacoes_X) > 60:\n            utilizacoes_X.pop(0)\n
+    \       \n        contexto.env[f'cpu{i}_utilizations'] = utilizacoes_X\n        media_movel_simples_X
+    = np.mean(utilizacoes_X)\n        medias_moveis_simples.append(media_movel_simples_X)\n
+    \       \n    resposta = {\n        'porcentagem-rede-egresso': porcentagem_egresso_rede,\n
+    \       'porcentagem-cache-memoria': porcentagem_cache_memoria\n    }\n\n    resposta.update({f'media-movel-cpu{i}':
+    media_movel_simples_X for i, media_movel_simples_X in enumerate(medias_moveis_simples)})\n\n
+    \   return resposta\n"
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2023-12-12T12:50:47Z"
+  name: pyfile
+  namespace: arthurmadureira
+  resourceVersion: "4331318"
+  uid: d6bdd29b-ba88-4ed1-81e6-af7698ea2c46
