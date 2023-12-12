@@ -1,4 +1,3 @@
-REDIS_OUTPUT_KEY=2021031599-proj3-output     --output yaml
 apiVersion: v1
 data:
   REDIS_OUTPUT_KEY: 2021031599-proj3-output

@@ -1,0 +1,1 @@
+docker build -t metricas:latest .; docker run -p 32171:32171 metricas:latest
